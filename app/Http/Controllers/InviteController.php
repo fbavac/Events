@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Jobs\SendEmailJob;
 use App\Models\Invite;
+use App\Http\Requests;
 use App\Models\Event;
 use Redirect;
 use Auth;
 use Mail;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\Jobs\SendEmailJob;
+
+
 
 class InviteController extends Controller
 {
@@ -23,35 +25,10 @@ class InviteController extends Controller
     {
         //
         $user_id = Auth::id();
-        $invites = Event::join('invites', 'invites.event_id', '=', 'events.id')
-                    ->where('user_id', $user_id)
-                    ->whereNull('invites.deleted_at')->get();
+        $invites = Invite::events($user_id);
         $page_data[] = ['page_header'=>"Invite", 'table_heading' => "Invite List",'bc1' => "Home",'bc2' => "Invite",'bc3' => ""];
         return view('invite.list',compact('invites','page_data'));
         
-
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-
-
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-
 
     }
 
@@ -72,17 +49,6 @@ class InviteController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -100,13 +66,10 @@ class InviteController extends Controller
         $event = Event::where('id', $id)->first();
          $this->send_email($request->email,$event->name,$event->start_date,$event->end_date);
 
-        
-        // if($mail){
-            $invite = Invite::create([
-                'event_id' => $id,
-                'email' => $request->email                       
-            ]);
-        // }
+        $invite = Invite::create([
+            'event_id' => $id,
+            'email' => $request->email                       
+        ]);
 
         if($invite){
             return json_encode(array("statusCode"=>200,"message"=>"Invited Successfully"));
@@ -136,7 +99,7 @@ class InviteController extends Controller
     }
 
     /**
-     * Send email to invited users.
+     * Send Queue email to invited users.
      *
      * @param  $to, $event, $from_date, $to_date
      * @return \Illuminate\Http\Response
@@ -144,16 +107,7 @@ class InviteController extends Controller
 
     public function send_email($to, $event, $from_date, $to_date) 
     {
-        // $details['email'] = $to;
-        //  SendEmailJob::dispatch($details);
-        
         $details = array("event"=>$event, "body" => "We’d love to see you among us at ","start"=>$from_date,"end"=>$to_date, "email"=> $to);
         SendEmailJob::dispatch($details);
-        //  Mail::send('mail.invite', $data, function($message) use ($event, $to) {
-        // $message->to($to, $event)
-        // ->subject('Invitation for an Event');
-        // $message->from('noreply@gmail.com','Invitation for '.$event );
-        //   });
-
     }
 }

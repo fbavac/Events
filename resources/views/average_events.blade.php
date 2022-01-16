@@ -23,7 +23,7 @@
                     <div class="card card-statistics">
                         <div class="card-body statistics-body">
                             <div class="row">
-                                <div class="col-xl-2 col-sm-6 col-12 mb-2 mb-xl-0">
+                                <div class="col-xl-4 col-sm-6 col-12 mb-2 mb-xl-0">
                                     <a>
                                         <div class="media">
                                             <div class="avatar bg-light-primary mr-2">
@@ -32,23 +32,8 @@
                                                 </div>
                                             </div>
                                             <div class="media-body my-auto">
-                                                <h4 class="font-weight-bolder mb-0">@if(isset($all_active_prod[0])) {{count($all_active_prod)}} @endif</h4>
-                                                <p class="card-text font-small-3 mb-0">Average Events</p> <!-- admin added -->
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-xl-2 col-sm-6 col-12 mb-2 mb-xl-0">
-                                    <a>
-                                        <div class="media">
-                                            <div class="avatar bg-light-info mr-2">
-                                                <div class="avatar-content">
-                                                    <i data-feather="box" class="avatar-icon"></i>
-                                                </div>
-                                            </div>
-                                            <div class="media-body my-auto">
-                                                <h4 class="font-weight-bolder mb-0"> @if(isset($new_prod_req[0])) {{count($new_prod_req)}} @endif</h4>
-                                                <p class="card-text font-small-3 mb-0">Test</p> <!-- user side scrap req -->
+                                                <h4 class="font-weight-bolder mb-0">@if(isset($total_avg)) {{$total_avg}} @endif</h4>
+                                                <p class="card-text font-small-3 mb-0">Total Average Events</p> <!-- admin added -->
                                             </div>
                                         </div>
                                     </a>
@@ -71,18 +56,17 @@
 	                            <table id="example" class="table display">
 	                                <thead>
 	                                        <tr>
-	                                            <th>Event Name</th>
-	                                            <th>Start Date</th>
-	                                            <th>End Date</th>
+	                                            <th>Name</th>
+	                                            <th>Average</th>
+	                                           
 	                                        </tr>
 	                                    </thead>
 	                                    <tbody>
-	                                    @if(isset($events[0]))
-	                                    @foreach($events as $event)
+	                                    @if(isset($avg_user[0]))
+	                                    @foreach($avg_user as $event)
 	                                        <tr> 
-	                                            <td>{{$event->name}}</td>
-	                                            <td>{{$event->start_date}}</td>
-	                                            <td>{{$event->end_date}}</td>
+	                                            <td>{{$event['name']}}</td>
+	                                            <td>{{$event['average']}}</td>
 	                                        </tr>
 	                                    @endforeach
 	                                    @else

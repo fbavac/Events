@@ -16,31 +16,19 @@ use App\Http\Controllers\InviteController;
 |
 */
 
-// Route::get('/', function () {
-// 	return view('welcome');
-// });
+Route::fallback(function () {
+    return redirect('/');
+});
+
 Route::get('/', [HomeController::class, 'welcome']);
 Route::post('/', [HomeController::class, 'welcomeDateRange']);
 Route::get('/average-events', [HomeController::class, 'averageEvents']);
 Route::get('/all-events', [EventsController::class, 'allActive']);
 
-
-
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('/home', [HomeController::class, 'index'])->name('home');
 	Route::resource('event', EventsController::class);
 	Route::resource('invite', InviteController::class);
-
- 
 });
 
 Auth::routes();
-
-
-Route::get('email-test', function(){
-    $details['email'] = 'fbavac@gmail.com';
-    dispatch(new App\Jobs\SendEmailJob($details));
-    // $exitCode = Artisan::call('queue:work');
-    dd('done');
-
-});

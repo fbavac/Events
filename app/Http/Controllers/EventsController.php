@@ -32,7 +32,6 @@ class EventsController extends Controller
     public function create()
     {
         //
-
         $page_data[] = ['page_header'=>"Event", 'form_heading' => "Event Add Form", 'table_heading' => "Event Add",'bc1' => "Home",'bc2' => "Event",'bc3' => "Add Event"];
         return view('events.add', compact('page_data'));
     }
@@ -75,7 +74,6 @@ class EventsController extends Controller
      */
     public function show($id)
     {
-        //
         //
         $id = decrypt($id);
         $event = Event::where('id', $id)->first();

@@ -7,6 +7,7 @@ use App\Models\Invite;
 use App\Models\Event;
 use Redirect;
 use Auth;
+use DB;
 
 class HomeController extends Controller
 {
@@ -29,9 +30,7 @@ class HomeController extends Controller
     {
         $user_id = Auth::id();
         $event_counts = Event::where('user_id', $user_id)->count();
-        $invite_req = Event::join('invites', 'invites.event_id', '=', 'events.id')
-                    ->where('user_id', $user_id)
-                    ->whereNull('invites.deleted_at')->count();
+        $invite_req = Event::invite($user_id);
         return view('home', compact('event_counts','invite_req'));
     }
 
@@ -73,8 +72,26 @@ class HomeController extends Controller
      */
 
     public function averageEvents(){
-        $events = Event::all();
-        return view('average_events',compact('events'));
+    
+        $events = Event::eventAverage(); //fetch counts user based
+
+        $event_count = array_column((array)$events, 'event_count');
+        $total_event = array_sum($event_count); // total event count
+
+        $user_count = array_column((array)$events, 'user_id');
+        $total_user = count($user_count); //total user count
+
+        $total_avg = ($total_event/$total_user); //total average
+
+        $avg_user = [];
+        foreach ($events as $key => $value) {
+
+            $user_avg = $total_event/$value['event_count']; //user average
+            $avg_user[$key]['average']=$user_avg;
+            $avg_user[$key]['name'] = $value['name'];
+        }       
+
+        return view('average_events',compact('avg_user','total_avg'));
     }
     
     
