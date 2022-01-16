@@ -35,6 +35,6 @@ class SendEmailJob implements ShouldQueue
     {
         //
         $email = new InviteEmail($this->details);
-        Mail::to($this->details['SendEmailJob'])->send($email);
+        Mail::to($this->details['email'])->send($email);
     }
 }
