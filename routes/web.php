@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FormController;
+use App\Http\Controllers\EventsController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InviteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,16 +16,31 @@ use App\Http\Controllers\FormController;
 |
 */
 
+// Route::get('/', function () {
+// 	return view('welcome');
+// });
+Route::get('/', [HomeController::class, 'welcome']);
+Route::post('/', [HomeController::class, 'welcomeDateRange']);
+Route::get('/average-events', [HomeController::class, 'averageEvents']);
+Route::get('/all-events', [EventsController::class, 'allActive']);
 
- Route::get('/', [FormController::class, 'dynamic_form']);
 
 
 Route::group(['middleware' => 'auth'], function () {
-	Route::get('/home', [FormController::class, 'index'])->name('home');
-	Route::resource('forms', FormController::class);
+	Route::get('/home', [HomeController::class, 'index'])->name('home');
+	Route::resource('event', EventsController::class);
+	Route::resource('invite', InviteController::class);
+
  
 });
 
 Auth::routes();
 
 
+Route::get('email-test', function(){
+    $details['email'] = 'fbavac@gmail.com';
+    dispatch(new App\Jobs\SendEmailJob($details));
+    // $exitCode = Artisan::call('queue:work');
+    dd('done');
+
+});
